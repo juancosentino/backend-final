@@ -1,22 +1,42 @@
 const ProductsModel = require("../models/products.schema")
+const cloudinary = require('../helpers/clodinary')
 
-const createProduct = async(req, res) => {
-    try{
+const createProduct = async (req, res) => {
+    try {
+        const { titulo, precio, descripcion, destacado, categoria } = req.body;
 
-        const { titulo, precio, imagen, descripcion} = req.body
-
-        if(!titulo || !precio || !imagen || !descripcion){
-            res.status(400).json({msg: 'Algun campo esta vacio'})
-            return 
+        // Verificar que los campos obligatorios no estén vacíos
+        if (!titulo || !precio || !descripcion ||!destacado || !categoria){
+            return res.status(400).json({ msg: 'Algun campo está vacío' });
         }
 
-        const newProduct = new ProductsModel(req.body) /* formulario completo */
-        await newProduct.save()
-        res.status(201).json({msg: 'Producto creado con exito', newProduct})
+        // Verificar si se ha cargado una imagen
+        if (!req.file) {
+            return res.status(400).json({ msg: 'Debes subir una imagen' });
+        }
+
+        // Subir la imagen a Cloudinary
+        const uploadResult = await cloudinary.uploader.upload(req.file.path);
+
+        // Crear un nuevo producto con la URL de la imagen en Cloudinary
+        const newProduct = new ProductsModel({
+            titulo,
+            precio,
+            imagen: uploadResult.secure_url,
+            descripcion,
+            destacado,
+            categoria,
+        });
+
+        // Guardar el nuevo producto en la base de datos
+        await newProduct.save();
+
+        res.status(201).json({ msg: 'Producto creado con éxito', newProduct });
     } catch (error) {
-        res.status(500).json({msg: 'Falla en el servidor', error})
+        console.error(error)
+        res.status(500).json({ msg: 'Falla en el servidor', error });
     }
-}
+};
 
 const getProduct = async(req, res) => {
     try{

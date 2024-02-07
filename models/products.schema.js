@@ -11,9 +11,18 @@ const ProductsSchema = new mongoose.Schema({
     },
     imagen: {
         type: String,
-        required: true
+        required: true 
     },
     descripcion: {
+        type: String,
+        required: true 
+    },
+    destacado: {
+        type: String,
+        default: false,
+        required: true
+    },
+    categoria: {
         type: String,
         required: true
     }
