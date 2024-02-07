@@ -1,6 +1,3 @@
-/* req - request -> frontend me envia al backend */
-/* res - response -> backend envia al frontend */
-
 const UsersModel = require("../models/users.schema")
 const bycriptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -82,7 +79,7 @@ const deleteUser = async(req, res) => {
 
 const loginUser = async(req, res) => {
     try {
-        const { nombreUsuario, emailUsuario, contrasenia } = req.body
+        const { emailUsuario, contrasenia } = req.body
         const userExist = await UsersModel.findOne({emailUsuario})
 
         if(!userExist){
@@ -103,7 +100,7 @@ const loginUser = async(req, res) => {
         }
 
         const token = jwt.sign(payload, process.env.SECRET_KEY)
-        res.status(200).json({msg: 'Logueado', token})
+        res.status(200).json({msg: 'Logueado', token, role: userExist.role, usuario: userExist.nombreUsuario})
     } catch (error) {
         res.status(500).json({msg: 'Falla en el servidor', error})
     }

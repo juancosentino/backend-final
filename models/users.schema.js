@@ -21,5 +21,10 @@ const UsersSchema = new Schema({
     }
 })
 
+UsersSchema.methods.toJSON = function() {
+    const { __v, contrasenia, ...usuario } = this.toObject()
+    return usuario
+}
+
 const UsersModel = model('users', UsersSchema)
 module.exports = UsersModel
