@@ -12,9 +12,12 @@ const auth = async(req, res, next) => {
         
         if(verify){
             next()
+        }else{
+            res.status(401).json({msg: 'No autorizado'})
         }
+
     } catch (error) {
-        console.log(error)
+        res.status(500).json({msg: 'Falla en el servidor', error: error})
     }
 }
 
